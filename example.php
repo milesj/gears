@@ -1,6 +1,6 @@
 <?php
 
-// Turn on erro reporting
+// Turn on error reporting
 error_reporting(E_ALL);
 
 // Require the class

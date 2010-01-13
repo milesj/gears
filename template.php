@@ -1,6 +1,6 @@
 <?php 
 /**
- * template.php
+ * Gears - Template Engine
  *
  * A template engine that can will display a specific template within the templates directory.
  * The template can be bound with variables that are passed into the template from PHP,
@@ -9,8 +9,6 @@
  * @author 		Miles Johnson - www.milesj.me
  * @copyright	Copyright 2006-2009, Miles Johnson, Inc.
  * @license 	http://www.opensource.org/licenses/mit-license.php - Licensed under The MIT License
- * @package 	Gears - Template Engine
- * @version 	2.0
  * @link		www.milesj.me/resources/script/template-engine
  */
 
