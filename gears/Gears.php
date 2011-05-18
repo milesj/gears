@@ -67,8 +67,7 @@ class Gears {
 		
 		$this->_config = array(
 			'ext' => trim($ext, '.'),
-			'path' => $path,
-			'layout' => 'default.tpl'
+			'path' => $path
 		);
 	}
 
@@ -76,21 +75,27 @@ class Gears {
 	 * Binds variables to all the templates.
 	 *
 	 * @access public
-	 * @param array $vars
-	 * @return void
+	 * @param array|string $variable
+	 * @param string $value
+	 * @return this
+	 * @chainable
 	 */
-	public function bind(array $vars = array()) {
-		if (!empty($vars)) {
-			foreach ($vars as $var => $value) {
-				if (is_numeric($var)) {
-					$var = '_'. $var;
-				}
-
-				$var = preg_replace('/[^_a-zA-Z0-9]/i', '', $var);
-
-				$this->_variables[$var] = $value;
+	public function bind($variable, $value = null) {
+		if (is_array($variable)) {
+			foreach ($variable as $var => $value) {
+				$this->bind($var, $value);
 			}
+		} else {
+			$variable = preg_replace('/[^_a-zA-Z0-9]/i', '', $variable);
+
+			if (is_numeric($variable)) {
+				$variable = '_'. $variable;
+			}
+
+			$this->_variables[$variable] = $value;
 		}
+
+		return $this;
 	}
 
 	/**
@@ -122,13 +127,15 @@ class Gears {
 	 * @return mixed
 	 */
 	public function display($tpl) {
-		// Render inner layout
+		// Render inner content
 		$this->_content = $this->_render($this->_config['path'] . $this->checkPath($tpl));
 
 		// Render outer layout
-		$rendered = $this->_render($this->_config['path'] . $this->_config['layout']);
+		if (!empty($this->_config['layout'])) {
+			return $this->_render($this->_config['path'] . $this->_config['layout']);
+		}
 
-		return $rendered;
+		return $this->_content;
 	}
 
 	/**
@@ -158,12 +165,15 @@ class Gears {
 	 *
 	 * @access public
 	 * @param string $tpl
-	 * @return void
+	 * @return this
+	 * @chainable
 	 */
 	public function setLayout($tpl) {
 		if ($path = $this->checkPath($tpl)) {
 			$this->_config['layout'] = $path;
 		}
+
+		return $this;
 	}
 
 	/**
