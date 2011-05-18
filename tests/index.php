@@ -38,12 +38,12 @@ if ($cache = $temp->isCached('index')) {
 
 // Bind template variables
 $temp->bind(array(
-	'className'		=> 'Gears - Template Engine',
-	'version'		=> $temp->version,
-	'extraInfo'		=> 'Gears is a play on words for: Engine + Gears + Structure.',
-	'description'	=> 'A PHP class that loads template files, binds variables, allows for parent-child hierarchy all the while rendering the template structure.',
-	'methods'		=> get_class_methods($temp)
+	'className' => 'Gears - Template Engine',
+	'version' => $temp->version,
+	'extraInfo' => 'Gears is a play on words for: Engine + Gears + Structure.',
+	'description' => 'A PHP class that loads template files, binds variables, allows for parent-child hierarchy all the while rendering the template structure.',
+	'methods' => get_class_methods($temp)
 ));
 
-// Render
+// Render and save cached version to "index"
 echo $temp->display('index', 'index');

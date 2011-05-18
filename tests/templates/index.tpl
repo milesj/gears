@@ -1,4 +1,3 @@
-
 <h1><?php echo $className; ?> v<?php echo $version; ?></h1>
 
 <p><?php echo $description; ?><br />
