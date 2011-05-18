@@ -105,13 +105,13 @@ class Gears {
 			$tpl .= '.'. $this->_config['ext'];
 		}
 
-		$tpl = str_replace($this->_config['path'], '', $tpl);
+		$path = str_replace($this->_config['path'], '', trim($tpl, '/'));
 
-		if (!file_exists($this->_config['path'] . $tpl)) {
+		if (!file_exists($this->_config['path'] . $path)) {
 			trigger_error(sprintf('%s(): The template "%s" does not exist', __METHOD__, $tpl), E_USER_ERROR);
 		}
 
-		return $tpl;
+		return $path;
 	}
 
 	/**
