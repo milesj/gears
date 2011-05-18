@@ -28,7 +28,15 @@ class Gears {
 	 * @access protected
 	 * @var boolean
 	 */
-	protected $_cache = true;
+	protected $_cache = false;
+
+	/**
+	 * How long the cache should last until being overwritten.
+	 *
+	 * @access protected
+	 * @var string
+	 */
+	protected $_cacheDuration = '+1 day';
 
 	/**
 	 * Path to the cached files, relative to the given CSS path.
@@ -154,14 +162,28 @@ class Gears {
 	 *
 	 * @access public
 	 * @param string $tpl
+	 * @param string $key
 	 * @return mixed
 	 */
-	public function display($tpl) {
-		$this->_content = $this->_render($this->_path . $this->checkPath($tpl));
+	public function display($tpl, $key = null) {
+		$path = $this->_path . $this->checkPath($tpl);
+		$key = empty($key) ? md5($path . $this->_layout) : $key;
 
-		// Render outer layout if it exists
+		// Return the cache if it exists
+		if ($cache = $this->isCached($key)) {
+			return $cache;
+		}
+		
+		$this->_content = $this->_render($path);
+
+		// Render layout if it exists
 		if (!empty($this->_layout)) {
-			return $this->_render($this->_path . $this->_layout);
+			$this->_content = $this->_render($this->_path . $this->_layout);
+		}
+
+		// Cache the rendered page
+		if ($this->_cache) {
+			$this->_cache($key, $this->getContent());
 		}
 
 		return $this->_content;
@@ -178,6 +200,33 @@ class Gears {
 	}
 
 	/**
+	 * Check to see if the templates are cached and is within the cache duration.
+	 *
+	 * @access protected
+	 * @param string $key
+	 * @return string|boolean
+	 */
+	public function isCached($key) {
+		if (!$this->_cache) {
+			return false;
+		}
+
+		$path = $this->_cachePath . $key;
+
+		if (file_exists($path)) {
+			list($timestamp, $content) = explode("\n", file_get_contents($path));
+
+			if ($timestamp >= time()) {
+				$this->_content = $content;
+				
+				return $content;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Include a template within another template. Can pass variables into its own protected scope.
 	 *
 	 * @access public
@@ -187,6 +236,29 @@ class Gears {
 	 */
 	public function open($tpl, array $variables = array()) {
 		return $this->_render($this->_path . $this->checkPath($tpl), $variables);
+	}
+
+	/**
+	 * Set the cache path.
+	 *
+	 * @access public
+	 * @param string $path
+	 * @param string $duration
+	 * @return this
+	 * @chainable
+	 */
+	public function setCaching($path, $duration = '+1 day') {
+		if (empty($path)) {
+			$path = $this->_path .'_cache/';
+		}
+
+		$path = trim(str_replace('\\', '/', $path), '/') .'/';
+
+		$this->_cache = true;
+		$this->_cachePath = $path;
+		$this->_cacheDuration = $duration;
+
+		return $this;
 	}
 
 	/**
@@ -203,6 +275,49 @@ class Gears {
 		}
 
 		return $this;
+	}
+
+	/**
+	 * Creates a cached file of the template.
+	 *
+	 * @access protected
+	 * @param string $name
+	 * @param string $content
+	 * @return void
+	 */
+	protected function _cache($name, $content) {
+		if (!$this->_cache) {
+			return;
+		}
+
+		$path = $this->_cachePath . $name;
+		$dir = dirname($path);
+
+		if (!is_dir($dir)) {
+			mkdir($dir, 0777);
+
+		} else if (!is_writeable($dir)) {
+			chmod($dir, 0777);
+		}
+
+		$duration = is_numeric($this->_cacheDuration) ? $this->_cacheDuration : strtotime($this->_cacheDuration);
+		$cache = $duration ."\n". $this->_compress($content);
+
+		file_put_contents($path, $cache);
+	}
+
+	/**
+	 * Compress the template by removing white space.
+	 *
+	 * @access protected
+	 * @param string $content
+	 * @return string
+	 */
+	protected function _compress($content) {
+		$content = str_replace(array("\r\n", "\r", "\n", "\t", '/\s\s+/', '  ', '   '), '', $content);
+		$content = preg_replace('/<!--(.*)-->/Uis', '', $content);
+
+		return $content;
 	}
 
 	/**
