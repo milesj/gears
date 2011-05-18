@@ -1,8 +1,8 @@
 <?php 
 /**
- * Gears - Template Engine
+ * Gears
  *
- * A template engine that can will display a specific template within the templates directory.
+ * A template engine that will display a specific template within the templates directory.
  * The template can be bound with variables that are passed into the template from PHP,
  * as well the template can have a wrapping layout template.
  * 
