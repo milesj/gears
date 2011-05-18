@@ -123,10 +123,10 @@ class Gears {
 	 */
 	public function display($tpl) {
 		// Render inner layout
-		$this->_content = $this->render($this->_config['path'] . $this->checkPath($tpl));
+		$this->_content = $this->_render($this->_config['path'] . $this->checkPath($tpl));
 
 		// Render outer layout
-		$rendered = $this->render($this->_config['path'] . $this->_config['layout']);
+		$rendered = $this->_render($this->_config['path'] . $this->_config['layout']);
 
 		return $rendered;
 	}
@@ -150,27 +150,7 @@ class Gears {
 	 * @return string
 	 */
 	public function open($tpl, array $variables = array()) {
-		return $this->render($this->_config['path'] . $this->checkPath($tpl), $variables);
-	}
-
-	/**
-	 * Render the template and extract the variables using output buffering.
-	 *
-	 * @access public
-	 * @param string $tpl
-	 * @param array $variables
-	 * @return string
-	 */
-	public function render($tpl, array $variables = array()) {
-		$variables = array_merge($this->_variables, $variables);
-		extract($variables, EXTR_SKIP);
-
-		ob_start();
-		include $tpl;
-		$content = ob_get_contents();
-		ob_end_clean();
-
-		return $content;
+		return $this->_render($this->_config['path'] . $this->checkPath($tpl), $variables);
 	}
 
 	/**
@@ -184,6 +164,26 @@ class Gears {
 		if ($path = $this->checkPath($tpl)) {
 			$this->_config['layout'] = $path;
 		}
+	}
+
+	/**
+	 * Render the template and extract the variables using output buffering.
+	 *
+	 * @access protected
+	 * @param string $path
+	 * @param array $variables
+	 * @return string
+	 */
+	protected function _render($path, array $variables = array()) {
+		$variables = array_merge($this->_variables, $variables);
+		extract($variables, EXTR_SKIP);
+
+		ob_start();
+		include $path;
+		$content = ob_get_contents();
+		ob_end_clean();
+
+		return $content;
 	}
 	
 }
