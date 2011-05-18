@@ -11,4 +11,4 @@
 </ul>
 
 <?php // Include another template and pass its private variables
-echo $this->open('include', array('date' => date('Y'))); ?>
+echo $this->open('include', array('date' => date('Y')), 'footer'); ?>

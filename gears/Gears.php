@@ -167,7 +167,6 @@ class Gears {
 	 */
 	public function display($tpl, $key = null) {
 		$path = $this->_path . $this->checkPath($tpl);
-		$key = empty($key) ? md5($path . $this->_layout) : $key;
 
 		// Return the cache if it exists
 		if ($cache = $this->isCached($key)) {
@@ -182,11 +181,29 @@ class Gears {
 		}
 
 		// Cache the rendered page
-		if ($this->_cache) {
+		if ($this->_cache && $key) {
 			$this->_cache($key, $this->getContent());
 		}
 
 		return $this->_content;
+	}
+
+	/**
+	 * Delete all cached files.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function flush() {
+		if (!$this->_cache) {
+			return false;
+		}
+
+		if ($dh = opendir($this->_cachePath)) {
+			while (($file = readdir($dh)) !== false) {
+				@unlink($this->_cachePath . $file);
+			}
+		}
 	}
 
 	/**
@@ -207,7 +224,7 @@ class Gears {
 	 * @return string|boolean
 	 */
 	public function isCached($key) {
-		if (!$this->_cache) {
+		if (!$this->_cache || !$key) {
 			return false;
 		}
 
@@ -232,14 +249,34 @@ class Gears {
 	 * @access public
 	 * @param string $tpl
 	 * @param array $variables
+	 * @param array|string $cache
 	 * @return string
 	 */
-	public function open($tpl, array $variables = array()) {
-		return $this->_render($this->_path . $this->checkPath($tpl), $variables);
+	public function open($tpl, array $variables = array(), $cache = array()) {
+		if (is_string($cache)) {
+			$cache = array('key' => $cache);
+		}
+
+		$cache = $cache + array(
+			'key' => null,
+			'duration' => $this->_cacheDuration
+		);
+
+		if ($content = $this->isCached($cache['key'])) {
+			return $content;
+		}
+
+		$content = $this->_render($this->_path . $this->checkPath($tpl), $variables);
+
+		if ($this->_cache && $cache['key']) {
+			$this->_cache($cache['key'], $content);
+		}
+
+		return $content;
 	}
 
 	/**
-	 * Set the cache path.
+	 * Set the cache path and duration.
 	 *
 	 * @access public
 	 * @param string $path
@@ -290,13 +327,31 @@ class Gears {
 			return;
 		}
 
+		$name = trim($name, '/');
 		$path = $this->_cachePath . $name;
 		$dir = dirname($path);
 
+		// Create folders if they do not exist
 		if (!is_dir($dir)) {
-			mkdir($dir, 0777);
+			if (strpos($name, '/') !== false) {
+				$dirParts = explode('/', dirname($name));
+				$dirCurrent = rtrim($this->_cachePath, '/');
 
-		} else if (!is_writeable($dir)) {
+				foreach ($dirParts as $part) {
+					$dirCurrent .= '/'. $part;
+
+					if (is_dir($dirCurrent)) {
+						break;
+					} else {
+						mkdir($dirCurrent, 0777);
+					}
+				}
+			} else {
+				mkdir($dir, 0777);
+			}
+		}
+
+		if (!is_writeable($dir)) {
 			chmod($dir, 0777);
 		}
 

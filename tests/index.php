@@ -6,11 +6,19 @@ error_reporting(E_ALL);
 // Include the class
 include_once '../gears/Gears.php';
 
+function debug($var) {
+	echo '<pre>'. print_r($var, true) .'</pre>';
+}
+
+$directory = dirname(__FILE__) .'/templates/';
+
 // Instantiate engine and set template directory
-$temp = new Gears(dirname(__FILE__) .'/templates/');
+$temp = new Gears($directory);
 
 // Set the layout
 $temp->setLayout('layouts/default');
+
+$temp->setCaching($directory .'_cache');
 
 // Bind template variables
 $temp->bind(array(
@@ -22,4 +30,6 @@ $temp->bind(array(
 ));
 
 // Render
-echo $temp->display('index');
+echo $temp->display('index', 'wtf.index');
+
+debug($temp);
