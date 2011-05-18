@@ -6,9 +6,9 @@
  * The template can be bound with variables that are passed into the engine from PHP,
  * wrap itself with layout templates, and open templates within templates.
  *
- * @author 		Miles Johnson - http://milesj.me
+ * @author		Miles Johnson - http://milesj.me
  * @copyright	Copyright 2006-2011, Miles Johnson, Inc.
- * @license 	http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
+ * @license		http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
  * @link		http://milesj.me/code/php/gears
  */
 
@@ -28,6 +28,13 @@ $temp->setLayout('layouts/default');
 
 // Turn on caching and set the cache directory
 $temp->setCaching($directory .'/cache/');
+
+// Check to see if the cache already exists (if not, display() will do so)
+// We can do this to exit early and not hit the database (or other logic)
+if ($cache = $temp->isCached('index')) {
+	echo $cache;
+	return;
+}
 
 // Bind template variables
 $temp->bind(array(

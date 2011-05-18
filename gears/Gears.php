@@ -6,9 +6,9 @@
  * The template can be bound with variables that are passed into the engine from PHP,
  * wrap itself with layout templates, and open templates within templates.
  * 
- * @author 		Miles Johnson - http://milesj.me
+ * @author		Miles Johnson - http://milesj.me
  * @copyright	Copyright 2006-2011, Miles Johnson, Inc.
- * @license 	http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
+ * @license		http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
  * @link		http://milesj.me/code/php/gears
  */
 
@@ -77,7 +77,7 @@ class Gears {
 	 * @var string
 	 */
 	protected $_path;
-	
+
 	/**
 	 * Array of binded template variables.
 	 *
@@ -100,7 +100,7 @@ class Gears {
 		if (empty($ext)) {
 			$ext = 'tpl';
 		}
-		
+
 		$this->_ext = trim($ext, '.');
 		$this->_path = $path;
 	}
@@ -168,7 +168,7 @@ class Gears {
 		if ($cache = $this->isCached($key)) {
 			return $cache;
 		}
-		
+
 		$this->_content = $this->_render($path);
 
 		// Render layout if it exists
@@ -233,7 +233,7 @@ class Gears {
 
 			if ($timestamp >= time()) {
 				$this->_content = $content;
-				
+
 				return $content;
 			}
 		}
@@ -251,6 +251,10 @@ class Gears {
 	 * @return string
 	 */
 	public function open($tpl, array $variables = array(), $cache = array()) {
+		if ($cache === true) {
+			$cache = $tpl;
+		}
+		
 		if (is_string($cache)) {
 			$cache = array('key' => $cache);
 		}
@@ -392,5 +396,5 @@ class Gears {
 
 		return $content;
 	}
-	
+
 }
