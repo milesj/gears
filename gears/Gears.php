@@ -21,20 +21,22 @@ class Gears {
 	 * @var string
 	 */
 	public $version = '2.0';
-	
+
 	/**
-	 * Settings required for the template engine.
+	 * Is caching enabled?
 	 *
 	 * @access protected
-	 * @var array
+	 * @var boolean
 	 */
-	protected $_config = array(
-		'ext' => 'tpl',
-		'path' => '/',
-		'layout' => null,
-		'cache' => true,
-		'cachePath' => '/cached/'
-	);
+	protected $_cache = true;
+
+	/**
+	 * Path to the cached files, relative to the given CSS path.
+	 *
+	 * @access protected
+	 * @var string
+	 */
+	protected $_cachePath;
 
 	/**
 	 * The rendered inner content to be used in the layout.
@@ -43,6 +45,30 @@ class Gears {
 	 * @var string
 	 */
 	protected $_content;
+
+	/**
+	 * Extension of the template files.
+	 *
+	 * @access protected
+	 * @var string
+	 */
+	protected $_ext = 'tpl';
+
+	/**
+	 * Name of the current layout.
+	 *
+	 * @access protected
+	 * @var string
+	 */
+	protected $_layout;
+
+	/**
+	 * Template directory.
+	 *
+	 * @access protected
+	 * @var string
+	 */
+	protected $_path;
 	
 	/**
 	 * Array of binded template variables.
@@ -71,10 +97,8 @@ class Gears {
 			$ext = 'tpl';
 		}
 		
-		$this->_config = array(
-			'ext' => trim($ext, '.'),
-			'path' => $path
-		);
+		$this->_ext = trim($ext, '.');
+		$this->_path = $path;
 	}
 
 	/**
@@ -112,13 +136,13 @@ class Gears {
 	 * @return string
 	 */
 	public function checkPath($tpl) {
-		if (substr($tpl, -(strlen($this->_config['ext']) + 1)) != '.'. $this->_config['ext']) {
-			$tpl .= '.'. $this->_config['ext'];
+		if (substr($tpl, -(strlen($this->_ext) + 1)) != '.'. $this->_ext) {
+			$tpl .= '.'. $this->_ext;
 		}
 
-		$path = str_replace($this->_config['path'], '', trim($tpl, '/'));
+		$path = str_replace($this->_path, '', trim($tpl, '/'));
 
-		if (!is_file($this->_config['path'] . $path)) {
+		if (!is_file($this->_path . $path)) {
 			trigger_error(sprintf('%s(): The template "%s" does not exist', __METHOD__, $tpl), E_USER_ERROR);
 		}
 
@@ -133,11 +157,11 @@ class Gears {
 	 * @return mixed
 	 */
 	public function display($tpl) {
-		$this->_content = $this->_render($this->_config['path'] . $this->checkPath($tpl));
+		$this->_content = $this->_render($this->_path . $this->checkPath($tpl));
 
 		// Render outer layout if it exists
-		if (!empty($this->_config['layout'])) {
-			return $this->_render($this->_config['path'] . $this->_config['layout']);
+		if (!empty($this->_layout)) {
+			return $this->_render($this->_path . $this->_layout);
 		}
 
 		return $this->_content;
@@ -162,7 +186,7 @@ class Gears {
 	 * @return string
 	 */
 	public function open($tpl, array $variables = array()) {
-		return $this->_render($this->_config['path'] . $this->checkPath($tpl), $variables);
+		return $this->_render($this->_path . $this->checkPath($tpl), $variables);
 	}
 
 	/**
@@ -175,7 +199,7 @@ class Gears {
 	 */
 	public function setLayout($tpl) {
 		if ($path = $this->checkPath($tpl)) {
-			$this->_config['layout'] = $path;
+			$this->_layout = $path;
 		}
 
 		return $this;
