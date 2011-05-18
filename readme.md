@@ -1,24 +1,20 @@
-Gears v2.0 - Template Engine
-****************************
+# Gears v2.1 #
 
-Requirements
-============
+## Requirements ##
 
-	* PHP 5.2.x
+* PHP 5.2.x
 
-Features
-========
+## Features ##
 
-    * Loads any type of file into the system (default .tpl)
-    * Binds variables globally to all templates
-    * Template files DO NOT need custom markup and placeholders for variables
-    * Can access and use variables in a template just as you would a PHP file
-    * Allows for parent-child hierarchy
-    * Parses a template within a parent layout template
-    * No eval() or security flaws
-    * And much more...
+* Loads any type of file into the system (default .tpl)
+* Binds variables globally to all templates
+* Template files DO NOT need custom markup or placeholders for variables
+* Can access and use variables in a template just as you would a PHP file
+* Allows for parent-child hierarchy
+* Parses a template within a parent layout template
+* Basic caching and compression support
+* And much more...
 
-Documentation
-=============
+## Documentation ##
 
-	* http://www.milesj.me/resources/script/template-engine
+Thorough documentation can be found here: http://milesj.me/code/php/gears

@@ -20,7 +20,7 @@ class Gears {
 	 * @access public
 	 * @var string
 	 */
-	public $version = '2.0';
+	public $version = '2.1';
 
 	/**
 	 * Is caching enabled?
