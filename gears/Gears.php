@@ -3,19 +3,19 @@
  * Gears
  *
  * A template engine that will display a specific template within the templates directory.
- * The template can be bound with variables that are passed into the template from PHP,
- * as well the template can have a wrapping layout template.
+ * The template can be bound with variables that are passed into the engine from PHP,
+ * wrap itself with layout templates, and open templates within templates.
  * 
- * @author 		Miles Johnson - www.milesj.me
- * @copyright	Copyright 2006-2009, Miles Johnson, Inc.
- * @license 	http://www.opensource.org/licenses/mit-license.php - Licensed under The MIT License
- * @link		www.milesj.me/resources/script/template-engine
+ * @author 		Miles Johnson - http://milesj.me
+ * @copyright	Copyright 2006-2011, Miles Johnson, Inc.
+ * @license 	http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
+ * @link		http://milesj.me/code/php/gears
  */
 
 class Gears {
 
 	/**
-	 * Current version: www.milesj.me/resources/script/template-engine
+	 * Current version.
 	 *
 	 * @access public
 	 * @var string
@@ -25,10 +25,10 @@ class Gears {
 	/**
 	 * Settings required for the template engine.
 	 *
-	 * @access private
+	 * @access protected
 	 * @var array
 	 */
-	private $__config = array(
+	protected $_config = array(
 		'ext' => 'tpl',
 		'path' => '/',
 		'layout' => null
@@ -37,18 +37,18 @@ class Gears {
 	/**
 	 * The rendered inner content to be used in the layout.
 	 *
-	 * @access private
+	 * @access protected
 	 * @var string
 	 */
-	private $__content;
+	protected $_content;
 	
 	/**
 	 * Array of binded template variables.
 	 *
-	 * @access private
+	 * @access protected
 	 * @var array
 	 */
-	private $__variables = array();
+	protected $_variables = array();
 
 	/**
 	 * Configure the templates path and file extension.
@@ -58,12 +58,14 @@ class Gears {
 	 * @param string $ext
 	 * @return void
 	 */
-	public function __construct($path = '', $ext = 'tpl') {
-		if (substr($path, -1) != DIRECTORY_SEPARATOR) {
-			$path .= DIRECTORY_SEPARATOR;
+	public function __construct($path, $ext = 'tpl') {
+		$path = str_replace('\\', '/', $path);
+
+		if (substr($path, -1) != '/') {
+			$path .= '/';
 		}
 		
-		$this->__config = array(
+		$this->_config = array(
 			'ext' => trim($ext, '.'),
 			'path' => $path,
 			'layout' => 'default.tpl'
@@ -80,7 +82,13 @@ class Gears {
 	public function bind(array $vars = array()) {
 		if (!empty($vars)) {
 			foreach ($vars as $var => $value) {
-				$this->__variables[$var] = $value;
+				if (is_numeric($var)) {
+					$var = '_'. $var;
+				}
+
+				$var = preg_replace('/[^_a-zA-Z0-9]/i', '', $var);
+
+				$this->_variables[$var] = $value;
 			}
 		}
 	}
@@ -93,14 +101,14 @@ class Gears {
 	 * @return string
 	 */
 	public function checkPath($tpl) {
-		if (substr($tpl, -(strlen($this->__config['ext']) + 1)) != '.'. $this->__config['ext']) {
-			$tpl .= '.'. $this->__config['ext'];
+		if (substr($tpl, -(strlen($this->_config['ext']) + 1)) != '.'. $this->_config['ext']) {
+			$tpl .= '.'. $this->_config['ext'];
 		}
 
-		$tpl = str_replace($this->__config['path'], '', $tpl);
+		$tpl = str_replace($this->_config['path'], '', $tpl);
 
-		if (!file_exists($this->__config['path'] . $tpl)) {
-			trigger_error('Gears::checkPath(): The template "'. $tpl .'" does not exist', E_USER_ERROR);
+		if (!file_exists($this->_config['path'] . $tpl)) {
+			trigger_error(sprintf('%s(): The template "%s" does not exist', __METHOD__, $tpl), E_USER_ERROR);
 		}
 
 		return $tpl;
@@ -111,21 +119,16 @@ class Gears {
 	 *
 	 * @access public
 	 * @param string $tpl
-	 * @param boolean $return
 	 * @return mixed
 	 */
-	public function display($tpl, $return = false) {
+	public function display($tpl) {
 		// Render inner layout
-		$this->__content = $this->render($this->__config['path'] . $this->checkPath($tpl));
+		$this->_content = $this->render($this->_config['path'] . $this->checkPath($tpl));
 
 		// Render outer layout
-		$rendered = $this->render($this->__config['path'] . $this->__config['layout']);
+		$rendered = $this->render($this->_config['path'] . $this->_config['layout']);
 
-		if ($return === true) {
-			return $rendered;
-		} else {
-			echo $rendered;
-		}
+		return $rendered;
 	}
 
 	/**
@@ -135,11 +138,11 @@ class Gears {
 	 * @return string
 	 */
 	public function getContent() {
-		return $this->__content;
+		return $this->_content;
 	}
 
 	/**
-	 * Include a template within another template. Can pass variables into its own private scope.
+	 * Include a template within another template. Can pass variables into its own protected scope.
 	 *
 	 * @access public
 	 * @param string $tpl
@@ -147,7 +150,7 @@ class Gears {
 	 * @return string
 	 */
 	public function open($tpl, array $variables = array()) {
-		return $this->render($this->__config['path'] . $this->checkPath($tpl), $variables);
+		return $this->render($this->_config['path'] . $this->checkPath($tpl), $variables);
 	}
 
 	/**
@@ -159,34 +162,15 @@ class Gears {
 	 * @return string
 	 */
 	public function render($tpl, array $variables = array()) {
-		$variables = array_merge($this->__variables, $variables);
+		$variables = array_merge($this->_variables, $variables);
 		extract($variables, EXTR_SKIP);
 
 		ob_start();
-		require $tpl;
+		include $tpl;
 		$content = ob_get_contents();
 		ob_end_clean();
 
 		return $content;
-	}
-
-	/**
-	 * Reset the class back to its defaults. Can save the previous path if necessary.
-	 *
-	 * @access public
-	 * @param boolean $savePath
-	 * @return void
-	 */
-	public function reset($savePath = true) {
-		$path = $this->__config['path'];
-
-		$this->__config = array();
-		$this->__content = null;
-		$this->__variables = array();
-
-		if ($savePath === true) {
-			$this->__config['path'] = $path;
-		}
 	}
 
 	/**
@@ -198,7 +182,7 @@ class Gears {
 	 */
 	public function setLayout($tpl) {
 		if ($path = $this->checkPath($tpl)) {
-			$this->__config['layout'] = $path;
+			$this->_config['layout'] = $path;
 		}
 	}
 	

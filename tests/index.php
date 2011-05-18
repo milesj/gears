@@ -4,9 +4,9 @@
 error_reporting(E_ALL);
 
 // Require the class
-require('template.php');
+include_once '../gears/Gears.php';
 
-$tplPath = dirname(__FILE__) . DIRECTORY_SEPARATOR .'templates'. DIRECTORY_SEPARATOR;
+$tplPath = dirname(__FILE__) .'/templates/';
 
 // Set up engine and display
 $temp = new Gears($tplPath);
@@ -17,4 +17,4 @@ $temp->bind(array(
 	'description'	=> 'A PHP class that loads template files, binds variables, allows for parent-child hierarchy all the while rendering the template structure.'
 ));
 $temp->setLayout('layout');
-$temp->display('index');
+echo $temp->display('index');
