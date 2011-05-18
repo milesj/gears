@@ -31,7 +31,9 @@ class Gears {
 	protected $_config = array(
 		'ext' => 'tpl',
 		'path' => '/',
-		'layout' => null
+		'layout' => null,
+		'cache' => true,
+		'cachePath' => '/cached/'
 	);
 
 	/**
@@ -63,6 +65,10 @@ class Gears {
 
 		if (substr($path, -1) != '/') {
 			$path .= '/';
+		}
+
+		if (empty($ext)) {
+			$ext = 'tpl';
 		}
 		
 		$this->_config = array(
@@ -112,7 +118,7 @@ class Gears {
 
 		$path = str_replace($this->_config['path'], '', trim($tpl, '/'));
 
-		if (!file_exists($this->_config['path'] . $path)) {
+		if (!is_file($this->_config['path'] . $path)) {
 			trigger_error(sprintf('%s(): The template "%s" does not exist', __METHOD__, $tpl), E_USER_ERROR);
 		}
 
@@ -127,10 +133,9 @@ class Gears {
 	 * @return mixed
 	 */
 	public function display($tpl) {
-		// Render inner content
 		$this->_content = $this->_render($this->_config['path'] . $this->checkPath($tpl));
 
-		// Render outer layout
+		// Render outer layout if it exists
 		if (!empty($this->_config['layout'])) {
 			return $this->_render($this->_config['path'] . $this->_config['layout']);
 		}
@@ -185,7 +190,7 @@ class Gears {
 	 * @return string
 	 */
 	protected function _render($path, array $variables = array()) {
-		$variables = array_merge($this->_variables, $variables);
+		$variables = $variables + $this->_variables;
 		extract($variables, EXTR_SKIP);
 
 		ob_start();
