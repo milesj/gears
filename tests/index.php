@@ -1,4 +1,16 @@
 <?php
+/**
+ * Gears
+ *
+ * A template engine that will display a specific template within the templates directory.
+ * The template can be bound with variables that are passed into the engine from PHP,
+ * wrap itself with layout templates, and open templates within templates.
+ *
+ * @author 		Miles Johnson - http://milesj.me
+ * @copyright	Copyright 2006-2011, Miles Johnson, Inc.
+ * @license 	http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
+ * @link		http://milesj.me/code/php/gears
+ */
 
 // Turn on error reporting
 error_reporting(E_ALL);
@@ -6,19 +18,16 @@ error_reporting(E_ALL);
 // Include the class
 include_once '../gears/Gears.php';
 
-function debug($var) {
-	echo '<pre>'. print_r($var, true) .'</pre>';
-}
-
-$directory = dirname(__FILE__) .'/templates/';
+$directory = dirname(__FILE__);
 
 // Instantiate engine and set template directory
-$temp = new Gears($directory);
+$temp = new Gears($directory .'/templates/');
 
 // Set the layout
 $temp->setLayout('layouts/default');
 
-$temp->setCaching($directory .'_cache');
+// Turn on caching and set the cache directory
+$temp->setCaching($directory .'/cache/');
 
 // Bind template variables
 $temp->bind(array(
@@ -30,6 +39,4 @@ $temp->bind(array(
 ));
 
 // Render
-echo $temp->display('index', 'wtf.index');
-
-debug($temp);
+echo $temp->display('index', 'index');

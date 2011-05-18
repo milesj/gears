@@ -95,11 +95,7 @@ class Gears {
 	 * @return void
 	 */
 	public function __construct($path, $ext = 'tpl') {
-		$path = str_replace('\\', '/', $path);
-
-		if (substr($path, -1) != '/') {
-			$path .= '/';
-		}
+		$path = rtrim(str_replace('\\', '/', $path), '/') .'/';
 
 		if (empty($ext)) {
 			$ext = 'tpl';
@@ -158,7 +154,7 @@ class Gears {
 	}
 
 	/**
-	 * Displays the chosen template and its layout.
+	 * Displays the chosen template and its layout; will return a cached version if it exists.
 	 *
 	 * @access public
 	 * @param string $tpl
@@ -201,7 +197,9 @@ class Gears {
 
 		if ($dh = opendir($this->_cachePath)) {
 			while (($file = readdir($dh)) !== false) {
-				@unlink($this->_cachePath . $file);
+				if ($file != '.' && $file != '..') {
+					@unlink($this->_cachePath . $file);
+				}
 			}
 		}
 	}

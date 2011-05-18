@@ -1,5 +1,7 @@
 # Gears v2.1 #
 
+A stand alone PHP template engine and parser.
+
 ## Requirements ##
 
 * PHP 5.2.x
