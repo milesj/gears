@@ -20,7 +20,7 @@ class Gears {
 	 * @access public
 	 * @var string
 	 */
-	public $version = '2.1';
+	public $version = '3.0';
 
 	/**
 	 * Is caching enabled?
@@ -335,22 +335,7 @@ class Gears {
 
 		// Create folders if they do not exist
 		if (!is_dir($dir)) {
-			if (strpos($name, '/') !== false) {
-				$dirParts = explode('/', dirname($name));
-				$dirCurrent = rtrim($this->_cachePath, '/');
-
-				foreach ($dirParts as $part) {
-					$dirCurrent .= '/'. $part;
-
-					if (is_dir($dirCurrent)) {
-						break;
-					} else {
-						mkdir($dirCurrent, 0777);
-					}
-				}
-			} else {
-				mkdir($dir, 0777);
-			}
+			mkdir($dir, 0777, true);
 		}
 
 		if (!is_writeable($dir)) {
