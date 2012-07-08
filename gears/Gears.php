@@ -1,11 +1,11 @@
-<?php 
+<?php
 /**
  * Gears
  *
  * A template engine that will display a specific template within the templates directory.
  * The template can be bound with variables that are passed into the engine from PHP,
  * wrap itself with layout templates, and open templates within templates.
- * 
+ *
  * @author		Miles Johnson - http://milesj.me
  * @copyright	Copyright 2006-2011, Miles Johnson, Inc.
  * @license		http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
@@ -92,7 +92,6 @@ class Gears {
 	 * @access public
 	 * @param string $path
 	 * @param string $ext
-	 * @return void
 	 */
 	public function __construct($path, $ext = 'tpl') {
 		$path = rtrim(str_replace('\\', '/', $path), '/') .'/';
@@ -111,7 +110,7 @@ class Gears {
 	 * @access public
 	 * @param array|string $variable
 	 * @param string $value
-	 * @return this
+	 * @return Gears
 	 * @chainable
 	 */
 	public function bind($variable, $value = null) {
@@ -123,7 +122,7 @@ class Gears {
 			$variable = preg_replace('/[^_a-zA-Z0-9]/i', '', $variable);
 
 			if (is_numeric($variable)) {
-				$variable = '_'. $variable;
+				$variable = '_' . $variable;
 			}
 
 			$this->_variables[$variable] = $value;
@@ -138,16 +137,17 @@ class Gears {
 	 * @access public
 	 * @param string $tpl
 	 * @return string
+	 * @throws Exception
 	 */
 	public function checkPath($tpl) {
-		if (substr($tpl, -(strlen($this->_ext) + 1)) != '.'. $this->_ext) {
-			$tpl .= '.'. $this->_ext;
+		if (substr($tpl, -(strlen($this->_ext) + 1)) !== '.' . $this->_ext) {
+			$tpl .= '.' . $this->_ext;
 		}
 
 		$path = str_replace($this->_path, '', trim($tpl, '/'));
 
 		if (!is_file($this->_path . $path)) {
-			trigger_error(sprintf('%s(): The template "%s" does not exist', __METHOD__, $tpl), E_USER_ERROR);
+			throw new Exception(sprintf('The template "%s" does not exist', $tpl));
 		}
 
 		return $path;
@@ -192,12 +192,12 @@ class Gears {
 	 */
 	public function flush() {
 		if (!$this->_cache) {
-			return false;
+			return;
 		}
 
 		if ($dh = opendir($this->_cachePath)) {
 			while (($file = readdir($dh)) !== false) {
-				if ($file != '.' && $file != '..') {
+				if ($file !== '.' && $file !== '..') {
 					@unlink($this->_cachePath . $file);
 				}
 			}
@@ -254,7 +254,7 @@ class Gears {
 		if ($cache === true) {
 			$cache = $tpl;
 		}
-		
+
 		if (is_string($cache)) {
 			$cache = array('key' => $cache);
 		}
@@ -283,15 +283,15 @@ class Gears {
 	 * @access public
 	 * @param string $path
 	 * @param string $duration
-	 * @return this
+	 * @return Gears
 	 * @chainable
 	 */
 	public function setCaching($path, $duration = '+1 day') {
 		if (empty($path)) {
-			$path = $this->_path .'_cache/';
+			$path = $this->_path . '_cache/';
 		}
 
-		$path = trim(str_replace('\\', '/', $path), '/') .'/';
+		$path = trim(str_replace('\\', '/', $path), '/') . '/';
 
 		$this->_cache = true;
 		$this->_cachePath = $path;
@@ -305,7 +305,7 @@ class Gears {
 	 *
 	 * @access public
 	 * @param string $tpl
-	 * @return this
+	 * @return Gears
 	 * @chainable
 	 */
 	public function setLayout($tpl) {
