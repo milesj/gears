@@ -1,0 +1,23 @@
+{
+	"name": "mjohnson/gears",
+	"type": "library",
+	"description": "A stand alone PHP template engine and parser.",
+	"keywords": ["template", "engine", "parser", "view"],
+	"homepage": "http://milesj.me/code/php/gears",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Miles Johnson",
+			"homepage": "http://milesj.me"
+		}
+	],
+	"require": {
+		"php": ">=5.2"
+	},
+	"support": {
+		"source": "https://github.com/milesj/php-gears"
+	},
+	"autoload": {
+		"psr-0": { "Gears": "gears" }
+	}
+}
