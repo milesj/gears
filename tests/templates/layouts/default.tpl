@@ -8,6 +8,6 @@
 
 	<?php // The content will be parsed here!
 	echo $this->getContent(); ?>
-	
+
 </body>
 </html>
