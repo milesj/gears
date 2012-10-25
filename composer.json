@@ -18,6 +18,6 @@
 		"source": "https://github.com/milesj/php-gears"
 	},
 	"autoload": {
-		"psr-0": { "Gears": "gears" }
+		"psr-0": { "mjohnson\\Gears": "" }
 	}
 }
