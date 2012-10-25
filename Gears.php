@@ -6,7 +6,7 @@
  * The template can be bound with variables that are passed into the engine from PHP,
  * wrap itself with layout templates, and open templates within templates.
  *
- * @version		3.1
+ * @version		3.1.1
  * @author		Miles Johnson - http://milesj.me
  * @copyright	Copyright 2006-2011, Miles Johnson, Inc.
  * @license		http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
@@ -14,14 +14,6 @@
  */
 
 class Gears {
-
-	/**
-	 * Current version.
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $version = '3.1';
 
 	/**
 	 * Is caching enabled?
