@@ -4,7 +4,8 @@ A stand alone PHP template engine and parser.
 
 ## Requirements ##
 
-* PHP 5.2.x
+* PHP 5.3+ - v4.x
+* PHP 5.2+ - v3.x
 
 ## Features ##
 

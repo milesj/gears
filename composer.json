@@ -12,12 +12,13 @@
 		}
 	],
 	"require": {
-		"php": ">=5.2"
+		"php": ">=5.3"
 	},
 	"support": {
 		"source": "https://github.com/milesj/php-gears"
 	},
 	"autoload": {
-		"psr-0": { "mjohnson\\Gears": "" }
-	}
+		"psr-0": { "mjohnson\\gears": "" }
+	},
+	"target-dir": "mjohnson/gears"
 }

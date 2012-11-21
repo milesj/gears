@@ -1,18 +1,22 @@
 <?php
 /**
- * Gears
- *
+ * @copyright	Copyright 2006-2012, Miles Johnson - http://milesj.me
+ * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
+ * @link		http://milesj.me/code/php/gears
+ */
+
+namespace mjohnson\gears;
+
+use \Exception;
+
+/**
  * A template engine that will display a specific template within the templates directory.
  * The template can be bound with variables that are passed into the engine from PHP,
  * wrap itself with layout templates, and open templates within templates.
  *
- * @version		3.1.1
- * @author		Miles Johnson - http://milesj.me
- * @copyright	Copyright 2006-2011, Miles Johnson, Inc.
- * @license		http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
- * @link		http://milesj.me/code/php/gears
+ * @version	3.1.1
+ * @package	mjohnson.gears
  */
-
 class Gears {
 
 	/**
@@ -89,7 +93,7 @@ class Gears {
 	public function __construct($path, $ext = 'tpl') {
 		$path = rtrim(str_replace('\\', '/', $path), '/') .'/';
 
-		if (empty($ext)) {
+		if (!$ext) {
 			$ext = 'tpl';
 		}
 
@@ -140,7 +144,7 @@ class Gears {
 		$path = str_replace($this->_path, '', trim($tpl, '/'));
 
 		if (!is_file($this->_path . $path)) {
-			throw new Exception(sprintf('The template "%s" does not exist', $tpl));
+			throw new Exception(sprintf('The template "%s" does not exist.', $tpl));
 		}
 
 		return $path;
@@ -165,7 +169,7 @@ class Gears {
 		$this->_content = $this->_render($path);
 
 		// Render layout if it exists
-		if (!empty($this->_layout)) {
+		if ($this->_layout) {
 			$this->_content = $this->_render($this->_path . $this->_layout);
 		}
 
@@ -280,7 +284,7 @@ class Gears {
 	 * @chainable
 	 */
 	public function setCaching($path, $duration = '+1 day') {
-		if (empty($path)) {
+		if (!$path) {
 			$path = $this->_path . '_cache/';
 		}
 

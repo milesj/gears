@@ -1,4 +1,4 @@
-<h1><?php echo $className; ?> v<?php echo $version; ?></h1>
+<h1><?php echo $className; ?></h1>
 
 <p><?php echo $description; ?><br />
 <i><?php echo $extraInfo; ?></i></p>
