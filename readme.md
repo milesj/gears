@@ -1,4 +1,4 @@
-# Gears v3.1.1 #
+# Gears v4.0.0 #
 
 A stand alone PHP template engine and parser.
 

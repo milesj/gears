@@ -14,7 +14,7 @@ use \Exception;
  * The template can be bound with variables that are passed into the engine from PHP,
  * wrap itself with layout templates, and open templates within templates.
  *
- * @version	3.1.1
+ * @version	4.0.0
  * @package	mjohnson.gears
  */
 class Gears {
