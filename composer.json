@@ -15,7 +15,7 @@
 		"php": ">=5.3"
 	},
 	"support": {
-		"source": "https://github.com/milesj/php-gears"
+		"source": "https://github.com/milesj/gears"
 	},
 	"autoload": {
 		"psr-0": { "mjohnson\\gears": "" }
